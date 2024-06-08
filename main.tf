@@ -1,11 +1,20 @@
+terraform {
+  required_providers {
+    libvirt = {
+      source  = "dmacvicar/libvirt"
+      version = "0.6.14"
+    }
+  }
+}
+
 provider "libvirt" {
-  uri = "qemu:///system"
+  uri = "qemu+ssh://murat@192.168.1.105/system"
 }
 
 resource "libvirt_volume" "ubuntu_img" {
-  name   = "ubuntu-22.04-cloudinit.img"
+  name   = "jammy-server-cloudimg-amd64-disk-kvm.img"
   pool   = "default"
-  source = "/var/lib/libvirt/images/jammy-server-cloudimg-amd64-disk-kvm.img"
+  source = "iso/jammy-server-cloudimg-amd64-disk-kvm.img"
   format = "qcow2"
 }
 
