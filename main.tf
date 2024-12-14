@@ -11,31 +11,35 @@ provider "libvirt" {
   uri = "qemu:///system"
 }
 
-# Temel imajı havuza aktar
-resource "libvirt_volume" "ubuntu_vm_1_base_image" {
-  name   = "ubuntu_vm_1-base.img"
+resource "libvirt_volume" "base_image" {
+  name   = "ubuntu_vm_base.img"
   pool   = "default"
   source = "/var/lib/libvirt/images/jammy-server-cloudimg-amd64.img"
   format = "qcow2"
 }
 
-# Yeni bir disk oluştur ve 30 GB olarak ayarla
-resource "libvirt_volume" "ubuntu_vm_1_disk" {
-  name           = "ubuntu_vm_1-disk.img"
+resource "libvirt_volume" "vm_disks" {
+  for_each = var.vms
+
+  name           = "${each.value.name}-disk.img"
   pool           = "default"
-  base_volume_id = libvirt_volume.ubuntu_vm_1_base_image.id
-  size           = 30 * 1024 * 1024 * 1024 # 30 GB
+  base_volume_id = libvirt_volume.base_image.id
   format         = "qcow2"
+  size           = each.value.disk_size_gb * 1024 * 1024 * 1024
 }
 
-resource "libvirt_cloudinit_disk" "ubuntu_vm_1_commoninit" {
-  name           = "ubuntu_vm_1-commoninit"
+resource "libvirt_cloudinit_disk" "vm_cloudinit" {
+  for_each = var.vms
+
+  name           = "${each.value.name}-commoninit"
   pool           = "default"
-  user_data      = data.template_cloudinit_config.ubuntu_vm_1_commoninit.rendered
-  network_config = file("${path.module}/network_config.yml")
+  user_data      = data.template_cloudinit_config.vm_cloudinit[each.key].rendered
+  network_config = templatefile("${path.module}/network_config.yml", { ip_address = each.value.ip_address })
 }
 
-data "template_cloudinit_config" "ubuntu_vm_1_commoninit" {
+data "template_cloudinit_config" "vm_cloudinit" {
+  for_each = var.vms
+
   gzip          = false
   base64_encode = false
 
@@ -45,15 +49,17 @@ data "template_cloudinit_config" "ubuntu_vm_1_commoninit" {
   }
 }
 
-resource "libvirt_domain" "ubuntu_vm_1" {
-  name   = "ubuntu_vm_1"
-  memory = "2048"
+resource "libvirt_domain" "vms" {
+  for_each = var.vms
+
+  name   = each.value.name
+  memory = 2048
   vcpu   = 2
 
-  cloudinit = libvirt_cloudinit_disk.ubuntu_vm_1_commoninit.id
+  cloudinit = libvirt_cloudinit_disk.vm_cloudinit[each.key].id
 
   disk {
-    volume_id = libvirt_volume.ubuntu_vm_1_disk.id
+    volume_id = libvirt_volume.vm_disks[each.key].id
   }
 
   network_interface {
@@ -76,3 +82,4 @@ resource "libvirt_domain" "ubuntu_vm_1" {
 
   autostart = true
 }
+
