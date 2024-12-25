@@ -45,7 +45,13 @@ data "template_cloudinit_config" "vm_cloudinit" {
 
   part {
     content_type = "text/cloud-config"
-    content      = templatefile("${path.module}/cloud_init.cfg", {})
+    content      = templatefile("${path.module}/cloud_init.cfg", {
+      ip_address = each.value.ip_address,
+      ssh_key    = each.value.ssh_key,
+      user_name  = each.value.user_name,
+      password   = each.value.password,
+      name       = each.value.name
+    })
   }
 }
 
@@ -53,8 +59,8 @@ resource "libvirt_domain" "vms" {
   for_each = var.vms
 
   name   = each.value.name
-  memory = 2048
-  vcpu   = 2
+  memory = each.value.memory
+  vcpu   = each.value.vcpu
 
   cloudinit = libvirt_cloudinit_disk.vm_cloudinit[each.key].id
 
