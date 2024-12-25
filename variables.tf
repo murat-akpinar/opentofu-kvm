@@ -16,7 +16,7 @@ variable "vms" {
       disk_size_gb = 60
       memory       = 4096
       vcpu         = 4
-      ssh_key      = "ssh-rsa "
+      ssh_key      = "ssh-rsa AAAAB3...YourKeyHere"
       user_name    = "murat"
       password     = "$6$FDy3tNnSg4Ge/cHD$IuKxFFvW77QAOULVp1ody3ExjIEoWmdSFmCkrl8CoMfvNBdW.snT44BoJFf0SNg9z80toTt82z44rs5URe71b."
     },
@@ -26,7 +26,7 @@ variable "vms" {
       disk_size_gb = 60
       memory       = 4096
       vcpu         = 4
-      ssh_key      = "ssh-rsa "
+      ssh_key      = "ssh-rsa AAAAB3...YourKeyHere"
       user_name    = "murat"
       password     = "$6$FDy3tNnSg4Ge/cHD$IuKxFFvW77QAOULVp1ody3ExjIEoWmdSFmCkrl8CoMfvNBdW.snT44BoJFf0SNg9z80toTt82z44rs5URe71b."
     }
