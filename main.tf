@@ -11,6 +11,15 @@ provider "libvirt" {
   uri = "qemu:///system"
 }
 
+ # if you want debian
+# resource "libvirt_volume" "base_image" {
+# name   = "debian_vm_base.img"
+# pool   = "default"
+# source = "/var/lib/libvirt/images/debian-11-genericcloud-amd64-daily-20250222-2031.qcow2"
+# format = "qcow2"
+# }
+ # if you want debian
+
 resource "libvirt_volume" "base_image" {
   name   = "ubuntu_vm_base.img"
   pool   = "default"
