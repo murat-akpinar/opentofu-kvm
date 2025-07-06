@@ -23,7 +23,7 @@ provider "libvirt" {
 resource "libvirt_volume" "base_image" {
   name   = "ubuntu_vm_base.img"
   pool   = "default"
-  source = "/var/lib/libvirt/images/jammy-server-cloudimg-amd64.img"
+  source = "/var/lib/libvirt/images/noble-server-cloudimg-amd64.img"
   format = "qcow2"
 }
 
